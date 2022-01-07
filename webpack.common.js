@@ -1,6 +1,7 @@
 const path = require('path');
 const CopyPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const PhaserSlopePlugin = require('');
 const webpack = require('webpack');
 
 module.exports = {
