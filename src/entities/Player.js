@@ -23,6 +23,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.jumpCount = 0;
         this.consecutiveJumps = 1;
 
+        // player states
+        this.isSliding = false;
+
         // animation
         initAnimation(this.scene.anims);
         this.play('playerMove', true);
@@ -46,12 +49,49 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     }
 
     update(time) {
+        if (this.isSliding || !this.body) { return; }
+        this.handleMovements();
 
-        const {space, down, up} = this.arrowControls;
+    }
+
+    turnAround() {
+        if (this.body) {
+            if (this.body.blocked.right) {
+                this.setVelocityX(-this.speed);
+                this.setFlipX(true);
+            } else if (this.body.blocked.left) {
+                this.setVelocityX(this.speed);
+                this.setFlipX(false);
+            }
+        }
+    }
+
+    handleMovements() {
+        const onFloor = this.body.onFloor();
+        this.handleCrouch(onFloor);
+        this.handleJump(onFloor);
+    }
+
+    handleCrouch(onFloor) {
+        this.scene.input.keyboard.on('keydown-DOWN', () => {
+            this.body.setSize(this.width, this.height / 2);
+            this.setOffset(0, this.height / 2);
+            onFloor ? this.play('playerSlide', true) : this.play('playerDive', true);
+            this.isSliding = true;
+        });
+
+        this.scene.input.keyboard.on('keyup-DOWN', () => {
+            this.body.setSize(this.width, 38);
+            this.setOffset(0, 0);
+            this.isSliding = false;
+        });
+    }
+
+    handleJump(onFloor) {
+        const {space, up} = this.arrowControls;
         const isSpaceJustDown = Phaser.Input.Keyboard.JustDown(space);
         const isUpJustDown = Phaser.Input.Keyboard.JustDown(up);
         const isWJustDown = Phaser.Input.Keyboard.JustDown(this.controls.W);
-        const onFloor = this.body.onFloor();
 
         if ((isSpaceJustDown || isUpJustDown || isWJustDown) && (onFloor || this.jumpCount < this.consecutiveJumps)) {
             this.setVelocityY(-this.jumpPower);
@@ -64,21 +104,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         } else {
             this.play('playerJump', true);
         }
-    }
-
-    turnAround() {
-        if (this.body.blocked.right) {
-            this.setVelocityX(-this.speed);
-            this.setFlipX(true);
-        } else if (this.body.blocked.left) {
-            this.setVelocityX(this.speed);
-            this.setFlipX(false);
-        }
-
-    }
-
-    handleMovements() {
-
     }
 
     handleAttacks() {

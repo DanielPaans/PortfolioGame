@@ -21,4 +21,23 @@ export default anims => {
         frameRate: 2,
         repeat: 0
     });
+
+    anims.create({
+        key: 'playerSlide',
+        frames: [
+            {key: 'knight-7'},
+            {key: 'knight-8'},
+        ],
+        frameRate: 5,
+        repeat: 0
+    });
+
+    anims.create({
+        key: 'playerDive',
+        frames: [
+            {key: 'knight-9'},
+        ],
+        frameRate: 1,
+        repeat: 0
+    });
 }
