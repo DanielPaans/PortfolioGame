@@ -19,7 +19,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         // configuration values
         this.gravity = 500;
         this.speed = 100;
-        this.jumpPower = 200;
+        this.jumpPower = 250;
         this.jumpCount = 0;
         this.consecutiveJumps = 1;
 
@@ -33,7 +33,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
         // player styling
         this.setOrigin(0.5,1);
-        const cropValues = {x: 10, y: 5};
+        const cropValues = {x: 10, y: 0};
         this.setSize(this.width - cropValues.x, this.height - cropValues.y);
         // player physics
         this.setCollideWorldBounds();
@@ -59,22 +59,22 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         }
 
         if (onFloor) {
+            this.play('playerMove', true);
             this.jumpCount = 0;
-        }
-
-        if (this.collideWorldBounds) {
+        } else {
+            this.play('playerJump', true);
         }
     }
 
-    turnAround(source) {
-        console.log(source);
-        if (this.body.touching.right) {
+    turnAround() {
+        if (this.body.blocked.right) {
             this.setVelocityX(-this.speed);
             this.setFlipX(true);
-        } else if (this.body.touching.left) {
+        } else if (this.body.blocked.left) {
             this.setVelocityX(this.speed);
             this.setFlipX(false);
         }
+
     }
 
     handleMovements() {
